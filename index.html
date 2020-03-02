@@ -307,31 +307,22 @@
 <h2 id="01-多示例学习"><a href="#01-多示例学习" class="headerlink" title="01 多示例学习"></a><u><strong>01</strong></u> 多示例学习</h2><p>谈到多示例学习就一定要向南京大学周志华老师致敬，周老师是多示例学习领域的领航员。在此引用周老师对多示例学习的描述[1]：</p>
 <p>“在多示例学习中，训练样本是由多个示例组成的包，包是有概念标记的，但示例本身却没有概念标记。如果一个包中至少包含一个正例，则该包是一个正包，否则即为反包。学习的目的是预测新包的类别。”</p>
 <p>我们以直观方式表述了多示例的概念(Fig. 1)，图中内容非常直观就不做描述了。</p>
-<img src="D:\WORK\Blog\blog\source\大道至简\1.png" style="zoom:100%;" />
-
+<p><img src="/images/1.png" alt="j"></p>
 <p>Fig. 1. Illustration of a MIL Problem (引用自[2])</p>
 <p>多示例学习中的关键是找到示例与包之间的逻辑关系，因为示例本身是无标签的而其所属的包是有标签的，所以这是一种弱监督学习框架下的特殊范式。公式(1-3)是应用较多的三种方式，看起来非常的简单但却是近年的主要方法。公式(1)所应用的逻辑在多示例领域被称为示例平均池化，即首先对示例得分(概率空间)进行判别，而后取所有示例得分平均值作为包的结果。公式(2)所展示的方式称为最大池化，即选择<em>Key Instance</em>，也就是找出得分最高的关键示例来代表其包的结果。而第三种所要讨论的，就是基于注意力机制的方式。</p>
-<img src="D:\WORK\Blog\blog\source\大道至简\2.png" alt="2" style="zoom:90%;" />
-
-
+<p><img src="/images/2.png" alt="formula"></p>
 <h2 id="02-注意力机制"><a href="#02-注意力机制" class="headerlink" title="02 注意力机制"></a><u><strong>02</strong></u> 注意力机制</h2><p>注意力机制（Attention Mechanism）是解决信息超载问题的主要手段的一种资源分配方案，将计算资源分配给更重要的任务。通俗且不是很严谨的说，就是一种被赋予了直观意义的权重，它决定着哪一部分信息更加重要。与上文结合来说，公式(1)和公式(2)可以认为是多示例问题中的一种硬性注意力。</p>
 <p>公式(1)中每个示例的注意力权重可以认为是：1/n</p>
 <p>公式(2)中<em>Key Instance</em>权重为1.0，而其余示例的注意力权重均为0。</p>
-<h2 id="03-示例注意力"><a href="#03-示例注意力" class="headerlink" title="03 示例注意力"></a><u><strong>03</strong></u> 示例注意力</h2><p><img src="C:%5CUsers%5Cchizi%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200223210234838.png" alt="image-20200223210234838"></p>
+<h2 id="03-示例注意力"><a href="#03-示例注意力" class="headerlink" title="03 示例注意力"></a><u><strong>03</strong></u> 示例注意力</h2><p><img src="/images/mi-net.png" alt="formula"></p>
 <p>Fig. 2. The Framework of MI-Net (引用自[3])</p>
 <p>Fig. 2 是经典的多示例网络，没错就是如此简单和经典。他与我们所熟悉的全连接网络区别在于，网络末端增加了符合多示例假设的模块：Instance Score Layer和MIL Pooling Layer。上述经典的网络结构中所使用的Pooling方法正是上文提到的最大池化。</p>
 <p>那么《Attention-based deep multiple instance learning》文章所采用的注意力机制是如何实现的呢？我们首先定义包<em>H</em>，<em>h_i</em>表示H中的示例。那么对包H的加权和就如公式(7)所示。动态的权重a则借鉴了加性注意力模型思想进行构建(公式8)，其中<em>W</em>和<em>V</em>为网络参数。</p>
-<img src="C:\Users\chizi\AppData\Roaming\Typora\typora-user-images\image-20200224013452493.png" alt="image-20200224013452493" style="zoom:50%;" />
-
-
-
-<img src="C:\Users\chizi\AppData\Roaming\Typora\typora-user-images\image-20200223231232579.png" alt="image-20200223231232579" style="zoom:50%;" />
-
+<p><img src="/images/4.png" alt="j"></p>
 <p>另外，该文章作者提到：tanh激活函数在表达非线性复杂关系是效果不好。因为tanh值域在[-1,+1]之间，在一定程度上限制了示例之间关系的表达。所以作者进一步引入了门控思想构建了Gated Attention。从公式(9)中也不难看出，实际上就是多了一步激活函数为Sigmoid的加权，并以element-wise形式结合。其实这一部分作者并没有给出充分的理论依据，我想此处大多数的idea来源于经验。如果讲的理论些，我更愿意理解为是对两种激活函数不同特性的集成。而且从该论文实验中也看得出，Gated的方案也并不是永远优于第一个版本的。</p>
-<img src="C:\Users\chizi\AppData\Roaming\Typora\typora-user-images\image-20200224014123618.png" alt="image-20200224014123618" style="zoom:50%;" />
-
+<p><img src="/images/5.png" alt="formula"></p>
 <p>该文章所设计的实验是我最喜欢的。对于相对小众的多示例领域，作者利用MNIST数据集构建了MNIST-Bag进行可视化实验，详细设置不赘述了，感兴趣可以直接读读原文。总之，作者利用可视化实验讨论了某个学术界小有争议的话题：注意力机制是否具备可解释性。而在本文方法中，答案是肯定的。注意力机制确实发现了包中的目标示例(关键示例，实验中设置为数字9)。对于其余实验效果同样出众，在此不赘述了。</p>
-<p><img src="C:%5CUsers%5Cchizi%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200224014939055.png" alt="image-20200224014939055"></p>
+<p><img src="/images/6.png" alt="formula"></p>
 <p>Fig.3. </p>
 <h3 id="04-总结"><a href="#04-总结" class="headerlink" title="04 总结"></a><u><strong>04</strong></u> 总结</h3><p>总的来说这篇文章的思想很简单，方法也不复杂。尤其是对百家争鸣的今天，方法越来越复杂越来越化庞大，用简单的方法做复杂的事才是最棒的。本文所用到的注意力策略也是非常的基础，但对于多示例学习领域来说是个新的发展方向。尤其是对注意力机制非常感兴趣的我来说，这篇文章对我影响很大。</p>
 <h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><ol>
