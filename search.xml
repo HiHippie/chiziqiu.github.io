@@ -1,6 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>图分类《Hierarchical Graph Representation Learning with Differentiable Pooling》阅读笔记</title>
+    <url>/2020/03/11/hierarchical/</url>
+    <content><![CDATA[<h1 id="图分类《Hierarchical-Graph-Representation-Learning-with-Differentiable-Pooling》阅读笔记"><a href="#图分类《Hierarchical-Graph-Representation-Learning-with-Differentiable-Pooling》阅读笔记" class="headerlink" title="图分类《Hierarchical Graph Representation Learning with Differentiable Pooling》阅读笔记"></a>图分类《Hierarchical Graph Representation Learning with Differentiable Pooling》阅读笔记</h1><h2 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h2><p>对于graph neural networks (GNNs)，大体上分三种任务：<strong>Node Classification</strong>，<strong>Link Prediction</strong>和 <strong>Graph Classification</strong>。本文关注的是<strong>Graph Classification</strong>。作者提到，现有的GNN本质上是<strong><em>flat</em></strong>的，而没有学习到<strong><em>hierarchical</em></strong>的图表达。原文描述如下：</p>
+<p>‘’However, current GNN methods are inherently flat and do not learn hierarchical representations of graphs—a limitation that is especially problematic for the task of graph classification, where the goal is to predict the label associated with an entire graph.‘’</p>
+<p>为此，作者提出了<strong><em>DIFFPOOL</em></strong>，一种能够学习到图的层次表达并可以<strong>结合多种端到端的GNNs结构</strong>可微的图池化模块。<strong><em>DIFFPOOL</em></strong>为每一层的<em>nodes<em>学习可微的软聚类(**</em>soft*** *cluster</em> <em>assignment</em>)， 将<em>nodes<em>映射到一组簇中，这一组簇将作为下一层</em>GNN Layer<em>的输入(</em>coarsened input</em>)。</p>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><h3 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h3><p>对于<strong><em>flat</em></strong>的不足和<strong><em>hierarchical</em></strong>的必要性，作者描述为：<strong><em>flat</em></strong>的本质是聚合信息只能通过<em>edges</em>完成而不能以<strong><em>hierarchical</em></strong>的方式推断和聚合信息。原文描述如下：</p>
+<p>“A major limitation of current GNN architectures is that they are inherently flat as they<br>only propagate information across the edges of the graph and are unable to infer and aggregate the information in a hierarchical way.”</p>
+<p>标准的方法首先为所有<em>nodes</em>学习<em>embeddings</em>，然后通过<em>globally pool</em>聚合所有的<em>node embeddings</em>。比如用简单的<em>simple summation</em>或者作用在整个集合上的神经网络。作者列举了四篇采用此类标准方法的文章：</p>
+<p>[1] <a href="http://proceedings.mlr.press/v48/daib16.pdf" target="_blank" rel="noopener">http://proceedings.mlr.press/v48/daib16.pdf</a></p>
+<p>[2] <a href="https://papers.nips.cc/paper/5954-convolutional-networks-on-graphs-for-learning-molecular-fingerprints.pdf" target="_blank" rel="noopener">https://papers.nips.cc/paper/5954-convolutional-networks-on-graphs-for-learning-molecular-fingerprints.pdf</a></p>
+<p>[3] <a href="https://arxiv.org/pdf/1704.01212.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1704.01212.pdf</a></p>
+<p>[4] <a href="https://arxiv.org/pdf/1511.05493.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1511.05493.pdf</a></p>
+<p>关于此类标准方法的<em>limitations</em>，作者还是强调<em>hierarchical</em>结构更适用于<em>Graph Classification</em>任务。</p>
+<p>作者所提方法类似于<em>CNNs<em>中的空间池化(</em>Spatial Pooling Operation</em>)。难点在于，<em>gragh<em>结构没有空间局部性(</em>notion of spatial locality</em>)，也就是说难以直接地将<em>nodes<em>池化到一起，因为</em>graph<em>的拓扑结构不能直接构建”</em>patch</em>“。并且不同的<em>graphs</em>中<em>nodes</em>和<em>edges</em>的数量也不同。</p>
+<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><p>聚类<em>nodes<em>来构建一个在低层图(</em>underlying graph</em>)上面的<strong>分层次的多层结构(<em>hierarchical multi-layer scaffold</em>)</strong>。<em>DIFFPOOL<em>在</em>GNN<em>每一层学习一个**</em>soft assignment<strong><em>，使</em>nodes*映射为</strong>簇集合<strong>。然后通过*</strong>stacking*** <em>GNN layers</em>构建分层结构(*hierarchical fashion</em>)。</p>
+<p><img src="/images/framework.png" alt="framework"></p>
+<p>上图所展示的对<em>DIFFPOOL</em>的<em>High-level</em>的说明：在每一个<em>hierarchical layer</em>，首先用一个<em>GNN Layer</em>学习<em>nodes</em>的<em>embeddings</em>，然后用学习到的<em>embeddings</em>对<em>nodes</em>进行<em>cluster</em>得到<em>coarsened graph</em>，接着用另一个<em>GNN Layer</em>学习<em>coarsened graph</em>。</p>
+<h2 id="Proposed-Method"><a href="#Proposed-Method" class="headerlink" title="Proposed Method"></a>Proposed Method</h2><p>首先是<em>Graph</em>的<em>Notation</em>：</p>
+<img src="/images/Notation.png" alt="notation" style="zoom:67%;" />
+
+<p><em>GNNs<em>的”</em>Message-Passing</em>“结构：</p>
+<img src="/images/messagepassing.png" alt="messagepassing" style="zoom:67%;" />
+
+<p><em>H</em>为<em>node embeddings</em>,即“<em>Messages</em>”。<em>M</em>为<em>message propagation</em>函数。<strong><em>DIFFPOOL</em>方法对<em>M</em>不敏感</strong>，也就是适用于各种<em>M</em>。</p>
+<p>给定<em>GNN Layer<em>的输出</em>Z = GNN(A,X)<em>，邻接矩阵</em>A<em>。该方法要学习一个新的</em>coarsened graph (m &lt; n)<em>，</em>A’  (nxn)</em>, <em>Z’ (mxd)</em>。然后<em>coarsened graph</em>作为其他<em>GNN Layer</em>的输入。迭代K次，如上面的框架图所示。现在要解决的问题是，如果利用<em>Z</em>来<em>cluster</em>或<em>pool</em>本层的<em>nodes</em>，从而能够让<em>coarsened graph</em>作为下一层的输入，而且这种方法要适用于各种<em>M</em>和每个<em>Layer</em>。</p>
+<h4 id="如何获取coarsened-graph"><a href="#如何获取coarsened-graph" class="headerlink" title="如何获取coarsened graph"></a>如何获取<em>coarsened graph</em></h4><p>定义第<em>l</em>层的<strong><em>Cluster Assignment Matrix</em></strong>：</p>
+<img src="/images/cluster assignment matrix.png" alt="cluster assignment matrix" style="zoom:67%;" />
+
+<p><strong><em>S</em></strong>每行表示<em>l</em>层的一个<em>node(cluster)</em>，每一列表示<em>l+1</em>层的一个<em>node(cluster)</em>。作者称之为一种<strong><em>soft assignment</em></strong>。这里看代码比较好理解。</p>
+<p>在奥格找法师开了个传送门：<a href="https://github.com/EstelleHuang666/gnn_hierarchical_pooling" target="_blank" rel="noopener">https://github.com/EstelleHuang666/gnn_hierarchical_pooling</a></p>
+<p><em>DIFFPOOL</em>定义如下：</p>
+<img src="/images/DIFFPOOL1.png" alt="DIFFPOOL1" style="zoom:67%;" />
+
+<img src="/images/DIFFPOOL2.png" alt="DIFFPOOL2" style="zoom:67%;" />
+
+<p>A为实矩阵，表示全连接的加权图(<em>a fully connected edge-weighted graph</em>)。<em>A_ij<em>表示</em>cluster i<em>与</em>cluster j<em>的连接强度(</em>Connectivity Strength</em>)。<em>X</em>中的第<em>i</em>行表示<em>cluster</em> <em>i</em>的<em>embedding<em>。**</em>Coarsened adjacency matrix</em> <em>A**</em>和<strong><em>Cluster embeddings X</em></strong>将作为另一个<em>GNN Layer</em>的输入。</p>
+<h4 id="如何获取assignment-matrix-S和embedding-matrices-Z"><a href="#如何获取assignment-matrix-S和embedding-matrices-Z" class="headerlink" title="如何获取assignment matrix S和embedding matrices Z"></a>如何获取<em>assignment matrix</em> <em>S</em>和<em>embedding matrices</em> <em>Z</em></h4><p>作者通过同样以<strong><em>cluster node features X</em></strong> 和 <strong><em>coarsened adjacency matrix A</em></strong>为输入的两个<strong>独立</strong>的GNN Layer分别生成<strong><em>S</em></strong>和<strong><em>Z</em></strong>。生成<em>Z</em>的<em>GNN</em>就是标准的<em>GNN</em>模块，命名为<strong><em>embedding GNN</em></strong>：</p>
+<img src="/images/Z.png" alt="Z" style="zoom:67%;" />
+
+<p>生成<em>S</em>的<em>GNN</em>为加了<em>softmax</em>的<em>GNN Layer</em>：</p>
+<img src="/images/S.png" alt="softmax" style="zoom:67%;" />
+
+<p>这里的<em>softmax</em>是<strong><em>row-wise fashion</em></strong>的。从矩阵乘法的角度去看这个公式：</p>
+<img src="/images/lijie.png" alt="lijie" style="zoom:67%;" />
+
+<p>相当于<em>(l+1, l) x (l, d) = (l+1, d)</em>，<strong>也就是基于多个权重的对nodes在每一维特征上的加权聚合</strong>。这里的多个权重，我理解为作者所提到的<strong><em>hierarchical</em></strong>。关于每一层中<em>cluster</em>数量的设置为超参，最后<em>cluster</em>数量为1用于获取最终的<strong><em>graph embedding vector</em></strong>。</p>
+<h4 id="关于优化"><a href="#关于优化" class="headerlink" title="关于优化"></a>关于优化</h4><p>关于优化，是用梯度下降法完成的。但作者提到在训练过程中对下式的优化困难。</p>
+<img src="/images/youhua.png" alt="youhua" style="zoom:67%;" />
+
+<p>所以这里应用了<strong><em>auxiliary link prediction objective</em></strong>，使临界节点能够被<em>pool</em>在一起。在每一层，作者通过下式优化：</p>
+<img src="/images/objective.png" alt="objective" style="zoom:67%;" />
+
+<p>作者提到的关于<em>Pooling GNN</em>另一个重要的性质是每个node的cluster assignment的输出应该倾向于one-hot的形式，从而使cluster之间的关系更加清晰。所以作者提出通过优化下式来达到上述目的：</p>
+<img src="/images/L.png" alt="L" style="zoom:67%;" />
+
+<p>最后每层的L_LP和L_E和分类损失相加。作者提到加了这两个损失函数会使收敛变慢，但效果更好。</p>
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>精巧的艺术品，向优秀的作者致敬</p>
+<p>除了复杂度略大</p>
+<p>才疏学浅，欢迎批评</p>
+<p>慢慢来比较快</p>
+<p>有个公众号是我和好朋友一起玩的，欢迎来一起交流。对，没头像。</p>
+<img src="/images/gzh.jpg" alt="gzh" style="zoom:33%;" />
+
+]]></content>
+      <categories>
+        <category>GNNs</category>
+      </categories>
+      <tags>
+        <tag>GNNs</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>大道至简----多示例学习与注意力机制的巧妙结合</title>
     <url>/2020/03/02/%E5%A4%A7%E9%81%93%E8%87%B3%E7%AE%80-%E5%A4%9A%E7%A4%BA%E4%BE%8B%E5%AD%A6%E4%B9%A0%E4%B8%8E%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6%E7%9A%84%E5%B7%A7%E5%A6%99%E7%BB%93%E5%90%88/</url>
     <content><![CDATA[<h1 id="大道至简—-多示例学习与注意力机制的巧妙结合"><a href="#大道至简—-多示例学习与注意力机制的巧妙结合" class="headerlink" title="大道至简—-多示例学习与注意力机制的巧妙结合"></a>大道至简—-多示例学习与注意力机制的巧妙结合</h1><p>谈谈《Attention-based deep multiple instance learning》 ICML 2018</p>
