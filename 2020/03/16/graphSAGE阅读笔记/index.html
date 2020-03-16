@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="GNNs," />
 
 
 
@@ -79,14 +79,24 @@
 
 
 
-<meta name="description" content="记录生活、分享热爱">
-<meta property="og:type" content="website">
-<meta property="og:title" content="慢慢来比较快">
-<meta property="og:url" content="http://yoursite.com/tags/Multi-instance-Learning/index.html">
+<meta name="description" content="GraphSAGE《Inductive Representation Learning on Large Graphs》阅读笔记Task：node classification 最近在读GNN的经典文章，网上对这些文章的解读已经非常透彻，本人在阅读文献过程中也学习了各路大神的独到见解，感谢，向你们致敬。在此分享我的阅读心得和热爱。 摘要GraphSAGE为解决大多算法在embeddings训练时需">
+<meta property="og:type" content="article">
+<meta property="og:title" content="graphSAGE阅读笔记">
+<meta property="og:url" content="http://yoursite.com/2020/03/16/graphSAGE%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/index.html">
 <meta property="og:site_name" content="慢慢来比较快">
-<meta property="og:description" content="记录生活、分享热爱">
+<meta property="og:description" content="GraphSAGE《Inductive Representation Learning on Large Graphs》阅读笔记Task：node classification 最近在读GNN的经典文章，网上对这些文章的解读已经非常透彻，本人在阅读文献过程中也学习了各路大神的独到见解，感谢，向你们致敬。在此分享我的阅读心得和热爱。 摘要GraphSAGE为解决大多算法在embeddings训练时需">
+<meta property="og:image" content="http://yoursite.com/images/GrapeSAGE%20aggregator.png">
+<meta property="og:image" content="http://yoursite.com/images/graphSAGE%20workflow.png">
+<meta property="og:image" content="http://yoursite.com/images/sage%E8%81%9A%E5%90%88%E5%85%AC%E5%BC%8F.png">
+<meta property="og:image" content="http://yoursite.com/images/sage%E7%9B%AE%E6%A0%87%E5%87%BD%E6%95%B0.png">
+<meta property="og:image" content="http://yoursite.com/images/sage%20pool.png">
+<meta property="og:image" content="http://yoursite.com/images/%E5%85%AC%E4%BC%97%E5%8F%B72.0.jpg">
+<meta property="article:published_time" content="2020-03-16T02:43:26.000Z">
+<meta property="article:modified_time" content="2020-03-16T03:05:36.326Z">
 <meta property="article:author" content="迟博">
+<meta property="article:tag" content="GNNs">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/images/GrapeSAGE%20aggregator.png">
 
 
 
@@ -116,13 +126,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/tags/Multi-instance-Learning/"/>
+  <link rel="canonical" href="http://yoursite.com/2020/03/16/graphSAGE阅读笔记/"/>
 
 
 
 
 
-  <title>标签: Multi-instance Learning | 慢慢来比较快</title>
+  <title>graphSAGE阅读笔记 | 慢慢来比较快</title>
   
 
 
@@ -141,7 +151,7 @@
     
   
 
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left ">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -279,54 +289,215 @@
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block tag">
+  <div id="posts" class="posts-expand">
+    
 
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h1>Multi-instance Learning<small>标签</small>
-        </h1>
-      </div>
+  
 
-      
-        
+  
+  
+  
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/16/graphSAGE%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="迟博">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/carushow.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="慢慢来比较快">
+    </span>
+
+    
+      <header class="post-header">
+
         
-            <a class="post-title-link" href="/2020/03/02/%E5%A4%A7%E9%81%93%E8%87%B3%E7%AE%80-%E5%A4%9A%E7%A4%BA%E4%BE%8B%E5%AD%A6%E4%B9%A0%E4%B8%8E%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6%E7%9A%84%E5%B7%A7%E5%A6%99%E7%BB%93%E5%90%88/" itemprop="url">
-              
-                <span itemprop="name">大道至简----多示例学习与注意力机制的巧妙结合</span>
-              
-            </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">graphSAGE阅读笔记</h1>
+        
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2020-03-02T23:45:46+08:00"
-              content="2020-03-02" >
-          03-02
-        </time>
-      </div>
+        <div class="post-meta">
+          <span class="post-time">
+            
 
-    </header>
-  </article>
+            
 
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+             
+             <span class="post-meta-divider">|</span>
+             <span id="busuanzi_value_page_pv"></span>次阅读
+          
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
+      
+
+      
+        <h1 id="GraphSAGE《Inductive-Representation-Learning-on-Large-Graphs》阅读笔记"><a href="#GraphSAGE《Inductive-Representation-Learning-on-Large-Graphs》阅读笔记" class="headerlink" title="GraphSAGE《Inductive Representation Learning on Large Graphs》阅读笔记"></a>GraphSAGE《Inductive Representation Learning on Large Graphs》阅读笔记</h1><p><strong>Task</strong>：node classification</p>
+<p>最近在读GNN的经典文章，网上对这些文章的解读已经非常透彻，本人在阅读文献过程中也学习了各路大神的独到见解，感谢，向你们致敬。在此分享我的阅读心得和热爱。</p>
+<h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p><strong>GraphSAGE</strong>为解决大多算法在embeddings训练时需要所有nodes参与的问题（对大图不友好）而生。文章提到现有方法是<strong>直推式transductive</strong>的，不能泛化到<strong>未知节点unseen nodes</strong>。GraphSAGE作为一种<strong>归纳式inductive</strong>框架，不仅能够泛化unseen node，还能够通过从node的<strong>局部邻节点</strong>中通过<strong>采样和聚合</strong>学习embeddings，而不是独立训练每个node的embeddings：</p>
+<p>“Here we present GraphSAGE, a general inductive framework that leverages node feature information to efficiently generate node embeddings for previously unseen data. Instead of training individual embeddings for each node, we learn a function that generates embeddings by sampling and aggregating features from a node’s local neighborhood”</p>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>在实际应用场景下需要对未知节点或者整个新图快速的生成嵌入。之前的一些直推式的node embedding方法局限在固定的图（fixed graph），而很多图是不断演变的，这就导致了这些直推方法在新的节点或图出现时要重新训练，效率很低。所以能够适应不断演变的图和节点的归纳能力变得至关重要。作者还提到这种归纳能力应该可以在具有相同特征形式的不同图之间泛化。所谓<strong>transductive</strong>，即节点分类任务中，GCN在训练时是<strong>同时需要训练节点和测试节点</strong>的，但在实际应用中测试节点是不断出现的，所以直推式是不够友好的。而对于大多数机器学习方法或问题，都是<strong>inductive</strong>的，因为训练样本/验证样本/测试样本往往是独立的，显然这种inductive方式更恰当。</p>
+<p><strong>inductive</strong>方法难点在于：<strong>边训练边归纳</strong>。</p>
+<p>虽然GraphSAGE旨在学习归纳式的节点嵌入方法，但是基于采样的方法使得他们能够掌握图的<strong>结构信息</strong>，用原文的话来讲就是：</p>
+<p>“reveal both the node’s local role in the graph, as well as its global position.”</p>
+<p>所以，即使是<strong>没有节点特征的图</strong>，GraphSAGE也是适用的。</p>
+<p>GraphSAGE通过一组<strong>聚合函数(Aggregator functions)</strong>从节点的<strong>局部邻节点(local neighborhood)</strong>中聚合特征信息。如下图所示：</p>
+<img src="/images/GrapeSAGE aggregator.png" style="zoom:50%;" />
+
+<p>大致流程是：每个聚合函数以<strong>不同数量</strong>的<strong>跳数(hops)</strong>或者<strong>搜索深度(search depth)</strong>聚合信息。在test时候，直接应用训练好的聚合函数去处理unseen node。</p>
+<p>对于损失函数，GraphSAGE使用了<strong>无监督</strong>方式，而不是任务驱动监督(task-specific supervision)的方式，当然监督的方式也是OK的。</p>
+<h2 id="Method"><a href="#Method" class="headerlink" title="Method"></a>Method</h2><h3 id="Embedding-generation-forward-propagation"><a href="#Embedding-generation-forward-propagation" class="headerlink" title="Embedding generation(forward propagation)"></a>Embedding generation(forward propagation)</h3><p>首先定义k个聚合函数：<br>$$<br>AGGREGAT{E_k},{\rm{ }}\forall k \in { 1, \ldots ,K}<br>$$<br>以及用于在模型不同层或搜索深度“Search Depth”之间传播信息的权重矩阵：<br>$$<br>{W^k},{\rm{ }}\forall k \in { 1, \ldots ,K}<br>$$<br>算法流程图：</p>
+<img src="/images\graphSAGE workflow.png" style="zoom:40%;" />
+
+<p>算法流程所展示的直觉是：方法在每一次迭代过程(search depth)中，节点都会从邻节点中聚合信息。随着迭代次数增多，节点<strong>增量地</strong>获取越来越多的关于图的信息。</p>
+<p><strong>K代表着K个聚合函数、K个权重矩阵、以及K层（可以理解为访问到的邻节点的hops）。</strong></p>
+<p><strong>1. 采样：</strong>作者在每一次外层循环中，通过采样只选择部分样本进去内层循环。</p>
+<p>“instead of iterating over all nodes, we compute <strong>only the representations that are necessary to</strong><br><strong>satisfy the recursion at each depth</strong>”</p>
+<p>外层节点样本从<strong>固定数量邻节点</strong>中均匀采样得到，而不是所有邻节点。</p>
+<p><strong>2. 聚合：</strong>每个node将从邻节点(Immediate Neighborhood)中得到的信息聚合为一个vector:</p>
+<img src="/images\sage聚合公式.png" style="zoom:60%;" />
+
+<p>后将聚合得到的vector和该节点自身的vector <strong>concatenate</strong>到一起，接上一个全连接层，得到的vector作为下一步的输入，记作z_v。至于如何聚合是比较灵活的，作者在后文也有讨论。</p>
+<h3 id="Learning-the-parameters-of-GraphSAGE"><a href="#Learning-the-parameters-of-GraphSAGE" class="headerlink" title="Learning the parameters of GraphSAGE"></a>Learning the parameters of GraphSAGE</h3><p>如前文所述，作者设计了无监督损失来优化聚合函数的参数和权重W。</p>
+<img src="/images\sage目标函数.png" style="zoom:60%;" />
+
+<p>其中<strong>第一项</strong>使得z_u与其“随机游走Random Walk”邻节点z_v<strong>更相似</strong>。</p>
+<p><strong>第二项</strong>使得z_u与其非邻居节点“negative samples”<strong>差异化</strong>。</p>
+<p>上述的相似性通过向量点积计算得到，<em>P</em>，<em>Q</em>分别表示negative samples的分布和数量。</p>
+<p>另外除了无监督损失，还可以根据特定任务设计task-specific objective.</p>
+<h3 id="Three-Aggregator-Architectures"><a href="#Three-Aggregator-Architectures" class="headerlink" title="Three Aggregator Architectures"></a>Three Aggregator Architectures</h3><h4 id="Mean-Aggregator"><a href="#Mean-Aggregator" class="headerlink" title="Mean Aggregator"></a>Mean Aggregator</h4><p>第一种方式就是elementwise mean，就是将深度搜索到的邻居节点在每一个维度上取平均值。<br>$$<br>h_v^k \leftarrow \sigma (W \cdot (MEAN({ h_v^{k - 1}})\cup { h_u^{k - 1},\forall u \in {\cal N}(v)}) )<br>$$</p>
+<h4 id="LSTM-Aggregator"><a href="#LSTM-Aggregator" class="headerlink" title="LSTM Aggregator"></a>LSTM Aggregator</h4><p>这个就是把LSTM用作聚合函数了，但是它本身并不是对称的，也就是并不能保证“<strong>排列不变量</strong>”。所以这里就先随机排列节点的embeddings，然后再扔进LSTM。</p>
+<h4 id="Pooling-Aggregator"><a href="#Pooling-Aggregator" class="headerlink" title="Pooling Aggregator"></a>Pooling Aggregator</h4><p>简单来说就是<strong>全连接层+elementwise max-pooling</strong>，具体如下：</p>
+<img src="/images\sage pool.png" style="zoom:60%;" />
+
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>本文的核心在于<strong>伪代码的4、5行（聚合）</strong>和关于<strong>sampling</strong>的设计。一方面GraphSAGE的采样方法对实际应用场景中的大图和可变图很友好；另一方面其聚合思想也使得节点特征的学习不再是独立的，而是更多的融合了邻节点的信息。</p>
+<p>另外作者也谈到了GraphSAGE与GCN的联系。GCN是直推式的和全局的，每次迭代都需要整张图的邻接矩阵（包括测试节点），GraphSAGE算是对GCN的一种精简。</p>
+<p>但是对于固定数量的采样可能有待商榷，我的理解是每个节点对于整张图的贡献度可能是不同的，那么全部去sampling同样的hops可能不够完善，所以GATs大概能解决这个问题吧。当然了，固定数量是为了能够更方便的做concatenation。</p>
+<p>个人理解，如有疏漏欢迎批评指正。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://mp.weixin.qq.com/s/VJn-Sek_aP02MOdcrzbtQA" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/VJn-Sek_aP02MOdcrzbtQA</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/62750137" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/62750137</a></p>
+<p>欢迎关注，一起来玩：</p>
+<img src="\images\公众号2.0.jpg" style="zoom:50%;" />
+      
     </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创、分享热爱</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.png" alt="迟博 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/GNNs/" rel="tag"># GNNs</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/03/11/hierarchical/" rel="next" title="图分类《Hierarchical Graph Representation Learning with Differentiable Pooling》阅读笔记">
+                <i class="fa fa-chevron-left"></i> 图分类《Hierarchical Graph Representation Learning with Differentiable Pooling》阅读笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
 
   </div>
   
   
   
-
+  </article>
   
+
+
+    <div class="post-spread">
+      
+        
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='//bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      
+    </div>
+  </div>
 
 
           </div>
@@ -334,6 +505,15 @@
 
 
           
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80ODkwNi8yNTQwMA=="></div>
+    </div>
+
+  
+
+
 
         </div>
         
@@ -354,8 +534,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -447,6 +636,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#GraphSAGE《Inductive-Representation-Learning-on-Large-Graphs》阅读笔记"><span class="nav-number">1.</span> <span class="nav-text">GraphSAGE《Inductive Representation Learning on Large Graphs》阅读笔记</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#摘要"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Introduction"><span class="nav-number">1.2.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Method"><span class="nav-number">1.3.</span> <span class="nav-text">Method</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Embedding-generation-forward-propagation"><span class="nav-number">1.3.1.</span> <span class="nav-text">Embedding generation(forward propagation)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Learning-the-parameters-of-GraphSAGE"><span class="nav-number">1.3.2.</span> <span class="nav-text">Learning the parameters of GraphSAGE</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Three-Aggregator-Architectures"><span class="nav-number">1.3.3.</span> <span class="nav-text">Three Aggregator Architectures</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Mean-Aggregator"><span class="nav-number">1.3.3.1.</span> <span class="nav-text">Mean Aggregator</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#LSTM-Aggregator"><span class="nav-number">1.3.3.2.</span> <span class="nav-text">LSTM Aggregator</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Pooling-Aggregator"><span class="nav-number">1.3.3.3.</span> <span class="nav-text">Pooling Aggregator</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Conclusion"><span class="nav-number">1.4.</span> <span class="nav-text">Conclusion</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">1.5.</span> <span class="nav-text">参考</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -597,6 +802,10 @@
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
@@ -625,6 +834,17 @@
 
 
 
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
   
 
 

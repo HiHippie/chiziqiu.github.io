@@ -1,6 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>graphSAGE阅读笔记</title>
+    <url>/2020/03/16/graphSAGE%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/</url>
+    <content><![CDATA[<h1 id="GraphSAGE《Inductive-Representation-Learning-on-Large-Graphs》阅读笔记"><a href="#GraphSAGE《Inductive-Representation-Learning-on-Large-Graphs》阅读笔记" class="headerlink" title="GraphSAGE《Inductive Representation Learning on Large Graphs》阅读笔记"></a>GraphSAGE《Inductive Representation Learning on Large Graphs》阅读笔记</h1><p><strong>Task</strong>：node classification</p>
+<p>最近在读GNN的经典文章，网上对这些文章的解读已经非常透彻，本人在阅读文献过程中也学习了各路大神的独到见解，感谢，向你们致敬。在此分享我的阅读心得和热爱。</p>
+<h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p><strong>GraphSAGE</strong>为解决大多算法在embeddings训练时需要所有nodes参与的问题（对大图不友好）而生。文章提到现有方法是<strong>直推式transductive</strong>的，不能泛化到<strong>未知节点unseen nodes</strong>。GraphSAGE作为一种<strong>归纳式inductive</strong>框架，不仅能够泛化unseen node，还能够通过从node的<strong>局部邻节点</strong>中通过<strong>采样和聚合</strong>学习embeddings，而不是独立训练每个node的embeddings：</p>
+<p>“Here we present GraphSAGE, a general inductive framework that leverages node feature information to efficiently generate node embeddings for previously unseen data. Instead of training individual embeddings for each node, we learn a function that generates embeddings by sampling and aggregating features from a node’s local neighborhood”</p>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>在实际应用场景下需要对未知节点或者整个新图快速的生成嵌入。之前的一些直推式的node embedding方法局限在固定的图（fixed graph），而很多图是不断演变的，这就导致了这些直推方法在新的节点或图出现时要重新训练，效率很低。所以能够适应不断演变的图和节点的归纳能力变得至关重要。作者还提到这种归纳能力应该可以在具有相同特征形式的不同图之间泛化。所谓<strong>transductive</strong>，即节点分类任务中，GCN在训练时是<strong>同时需要训练节点和测试节点</strong>的，但在实际应用中测试节点是不断出现的，所以直推式是不够友好的。而对于大多数机器学习方法或问题，都是<strong>inductive</strong>的，因为训练样本/验证样本/测试样本往往是独立的，显然这种inductive方式更恰当。</p>
+<p><strong>inductive</strong>方法难点在于：<strong>边训练边归纳</strong>。</p>
+<p>虽然GraphSAGE旨在学习归纳式的节点嵌入方法，但是基于采样的方法使得他们能够掌握图的<strong>结构信息</strong>，用原文的话来讲就是：</p>
+<p>“reveal both the node’s local role in the graph, as well as its global position.”</p>
+<p>所以，即使是<strong>没有节点特征的图</strong>，GraphSAGE也是适用的。</p>
+<p>GraphSAGE通过一组<strong>聚合函数(Aggregator functions)</strong>从节点的<strong>局部邻节点(local neighborhood)</strong>中聚合特征信息。如下图所示：</p>
+<img src="/images/GrapeSAGE aggregator.png" style="zoom:50%;" />
+
+<p>大致流程是：每个聚合函数以<strong>不同数量</strong>的<strong>跳数(hops)</strong>或者<strong>搜索深度(search depth)</strong>聚合信息。在test时候，直接应用训练好的聚合函数去处理unseen node。</p>
+<p>对于损失函数，GraphSAGE使用了<strong>无监督</strong>方式，而不是任务驱动监督(task-specific supervision)的方式，当然监督的方式也是OK的。</p>
+<h2 id="Method"><a href="#Method" class="headerlink" title="Method"></a>Method</h2><h3 id="Embedding-generation-forward-propagation"><a href="#Embedding-generation-forward-propagation" class="headerlink" title="Embedding generation(forward propagation)"></a>Embedding generation(forward propagation)</h3><p>首先定义k个聚合函数：<br>$$<br>AGGREGAT{E_k},{\rm{ }}\forall k \in { 1, \ldots ,K}<br>$$<br>以及用于在模型不同层或搜索深度“Search Depth”之间传播信息的权重矩阵：<br>$$<br>{W^k},{\rm{ }}\forall k \in { 1, \ldots ,K}<br>$$<br>算法流程图：</p>
+<img src="/images\graphSAGE workflow.png" style="zoom:40%;" />
+
+<p>算法流程所展示的直觉是：方法在每一次迭代过程(search depth)中，节点都会从邻节点中聚合信息。随着迭代次数增多，节点<strong>增量地</strong>获取越来越多的关于图的信息。</p>
+<p><strong>K代表着K个聚合函数、K个权重矩阵、以及K层（可以理解为访问到的邻节点的hops）。</strong></p>
+<p><strong>1. 采样：</strong>作者在每一次外层循环中，通过采样只选择部分样本进去内层循环。</p>
+<p>“instead of iterating over all nodes, we compute <strong>only the representations that are necessary to</strong><br><strong>satisfy the recursion at each depth</strong>”</p>
+<p>外层节点样本从<strong>固定数量邻节点</strong>中均匀采样得到，而不是所有邻节点。</p>
+<p><strong>2. 聚合：</strong>每个node将从邻节点(Immediate Neighborhood)中得到的信息聚合为一个vector:</p>
+<img src="/images\sage聚合公式.png" style="zoom:60%;" />
+
+<p>后将聚合得到的vector和该节点自身的vector <strong>concatenate</strong>到一起，接上一个全连接层，得到的vector作为下一步的输入，记作z_v。至于如何聚合是比较灵活的，作者在后文也有讨论。</p>
+<h3 id="Learning-the-parameters-of-GraphSAGE"><a href="#Learning-the-parameters-of-GraphSAGE" class="headerlink" title="Learning the parameters of GraphSAGE"></a>Learning the parameters of GraphSAGE</h3><p>如前文所述，作者设计了无监督损失来优化聚合函数的参数和权重W。</p>
+<img src="/images\sage目标函数.png" style="zoom:60%;" />
+
+<p>其中<strong>第一项</strong>使得z_u与其“随机游走Random Walk”邻节点z_v<strong>更相似</strong>。</p>
+<p><strong>第二项</strong>使得z_u与其非邻居节点“negative samples”<strong>差异化</strong>。</p>
+<p>上述的相似性通过向量点积计算得到，<em>P</em>，<em>Q</em>分别表示negative samples的分布和数量。</p>
+<p>另外除了无监督损失，还可以根据特定任务设计task-specific objective.</p>
+<h3 id="Three-Aggregator-Architectures"><a href="#Three-Aggregator-Architectures" class="headerlink" title="Three Aggregator Architectures"></a>Three Aggregator Architectures</h3><h4 id="Mean-Aggregator"><a href="#Mean-Aggregator" class="headerlink" title="Mean Aggregator"></a>Mean Aggregator</h4><p>第一种方式就是elementwise mean，就是将深度搜索到的邻居节点在每一个维度上取平均值。<br>$$<br>h_v^k \leftarrow \sigma (W \cdot (MEAN({ h_v^{k - 1}})\cup { h_u^{k - 1},\forall u \in {\cal N}(v)}) )<br>$$</p>
+<h4 id="LSTM-Aggregator"><a href="#LSTM-Aggregator" class="headerlink" title="LSTM Aggregator"></a>LSTM Aggregator</h4><p>这个就是把LSTM用作聚合函数了，但是它本身并不是对称的，也就是并不能保证“<strong>排列不变量</strong>”。所以这里就先随机排列节点的embeddings，然后再扔进LSTM。</p>
+<h4 id="Pooling-Aggregator"><a href="#Pooling-Aggregator" class="headerlink" title="Pooling Aggregator"></a>Pooling Aggregator</h4><p>简单来说就是<strong>全连接层+elementwise max-pooling</strong>，具体如下：</p>
+<img src="/images\sage pool.png" style="zoom:60%;" />
+
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>本文的核心在于<strong>伪代码的4、5行（聚合）</strong>和关于<strong>sampling</strong>的设计。一方面GraphSAGE的采样方法对实际应用场景中的大图和可变图很友好；另一方面其聚合思想也使得节点特征的学习不再是独立的，而是更多的融合了邻节点的信息。</p>
+<p>另外作者也谈到了GraphSAGE与GCN的联系。GCN是直推式的和全局的，每次迭代都需要整张图的邻接矩阵（包括测试节点），GraphSAGE算是对GCN的一种精简。</p>
+<p>但是对于固定数量的采样可能有待商榷，我的理解是每个节点对于整张图的贡献度可能是不同的，那么全部去sampling同样的hops可能不够完善，所以GATs大概能解决这个问题吧。当然了，固定数量是为了能够更方便的做concatenation。</p>
+<p>个人理解，如有疏漏欢迎批评指正。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://mp.weixin.qq.com/s/VJn-Sek_aP02MOdcrzbtQA" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/VJn-Sek_aP02MOdcrzbtQA</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/62750137" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/62750137</a></p>
+<p>欢迎关注，一起来玩：</p>
+<img src="\images\公众号2.0.jpg" style="zoom:50%;" />]]></content>
+      <tags>
+        <tag>GNNs</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>图分类《Hierarchical Graph Representation Learning with Differentiable Pooling》阅读笔记</title>
     <url>/2020/03/11/hierarchical/</url>
     <content><![CDATA[<h1 id="图分类《Hierarchical-Graph-Representation-Learning-with-Differentiable-Pooling》阅读笔记"><a href="#图分类《Hierarchical-Graph-Representation-Learning-with-Differentiable-Pooling》阅读笔记" class="headerlink" title="图分类《Hierarchical Graph Representation Learning with Differentiable Pooling》阅读笔记"></a>图分类《Hierarchical Graph Representation Learning with Differentiable Pooling》阅读笔记</h1><h2 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h2><p>对于graph neural networks (GNNs)，大体上分三种任务：<strong>Node Classification</strong>，<strong>Link Prediction</strong>和 <strong>Graph Classification</strong>。本文关注的是<strong>Graph Classification</strong>。作者提到，现有的GNN本质上是<strong><em>flat</em></strong>的，而没有学习到<strong><em>hierarchical</em></strong>的图表达。原文描述如下：</p>
